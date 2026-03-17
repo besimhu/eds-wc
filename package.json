@@ -7,7 +7,17 @@
     "lint:js": "eslint .",
     "lint:css": "stylelint \"blocks/**/*.css\" \"styles/*.css\"",
     "lint": "npm run lint:js && npm run lint:css",
-    "lint:fix": "npm run lint:js -- --fix && npm run lint:css -- --fix"
+    "lint:fix": "npm run lint:js -- --fix && npm run lint:css -- --fix",
+    "build:vite:js": "rm -rf .vite-build/js && VITE_TARGET=js vite build",
+    "build:vite:css": "rm -rf .vite-build/css && VITE_TARGET=css vite build",
+    "build:vite": "npm run build:vite:js && npm run build:vite:css",
+    "build:vite:scoped": "npm run build:vite:js && npm run build:vite:css",
+    "build:eds": "npm run build:vite && node tools/apply-vite-build.js",
+    "build:eds:scoped": "npm run build:vite:scoped && node tools/apply-vite-build.js",
+    "build:here": "node tools/build-here.js",
+    "dev:eds": "npx -y @adobe/aem-cli up --no-open --no-livereload --forward-browser-logs",
+    "dev:vite": "node tools/hmr-dev-server.js",
+    "dev": "concurrently -k \"npm run dev:eds\" \"npm run dev:vite\""
   },
   "repository": {
     "type": "git",
@@ -21,10 +31,14 @@
   "homepage": "https://github.com/adobe/aem-boilerplate#readme",
   "devDependencies": {
     "@babel/eslint-parser": "7.28.6",
+    "concurrently": "^9.2.1",
     "eslint": "8.57.1",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-plugin-import": "2.32.0",
+    "sass": "^1.98.0",
     "stylelint": "17.4.0",
-    "stylelint-config-standard": "40.0.0"
+    "stylelint-config-standard": "40.0.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.0.0"
   }
 }

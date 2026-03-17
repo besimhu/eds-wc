@@ -11,4 +11,5 @@ jobs:
       with:
         node-version: 24
     - run: npm ci
+    - run: npm run build:vite
     - run: npm run lint

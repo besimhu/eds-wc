@@ -2,6 +2,7 @@
 coverage/*
 logs/*
 node_modules/*
+.vite-build/*
 
 helix-importer-ui
 .DS_Store
