@@ -19,6 +19,23 @@ Before using the aem-boilerplate, we recommand you to go through the documentati
 npm i
 ```
 
+## Local git excludes
+
+Use this command to add local-only ignore patterns to `.git/info/exclude`:
+
+```sh
+npm run setup:local
+```
+
+Add extra local-only patterns:
+
+```sh
+npm run setup:local -- "path/or/pattern"
+```
+
+These excludes are not committed and must be run by each developer once per clone.
+Important: `.git/info/exclude` only affects untracked files.
+
 ## Vite build pipeline for EDS
 
 The project keeps Adobe EDS runtime contracts (`blocks/*/*.js` and `*.css`) but can now compile source assets through Vite first.
