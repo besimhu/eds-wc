@@ -4,6 +4,10 @@ Your project's description...
 ## Environments
 - Preview: https://main--{repo}--{owner}.aem.page/
 - Live: https://main--{repo}--{owner}.aem.live/
+- PR Preview Branch: `https://eds-preview-pr-{prNumber}--{repo}--{owner}.aem.page/`
+
+For each non-draft PR, GitHub Actions builds runtime files and force-pushes them to `eds-preview-pr-{prNumber}`.
+The preview branch is deleted automatically when the PR is closed.
 
 ## Documentation
 

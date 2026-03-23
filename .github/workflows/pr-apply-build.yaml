@@ -1,4 +1,4 @@
-name: PR Apply Build
+name: PR Preview Branch
 
 on:
   pull_request:
@@ -7,23 +7,26 @@ on:
       - synchronize
       - reopened
       - ready_for_review
+      - closed
 
 permissions:
   contents: write
 
 concurrency:
-  group: pr-apply-build-${{ github.event.pull_request.number }}
+  group: pr-preview-branch-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
-  apply-build:
-    if: ${{ !github.event.pull_request.draft && github.event.pull_request.head.repo.full_name == github.repository }}
+  publish-preview-branch:
+    if: ${{ github.event.action != 'closed' && !github.event.pull_request.draft && github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ubuntu-latest
+    env:
+      PREVIEW_BRANCH: eds-preview-pr-${{ github.event.pull_request.number }}
     steps:
       - name: Checkout PR branch
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
       - name: Use Node.js 24
@@ -39,13 +42,25 @@ jobs:
 
       - name: Commit generated files if changed
         run: |
-          if [ -z "$(git status --porcelain -- blocks scripts styles)" ]; then
-            echo "No generated file changes to commit."
-            exit 0
-          fi
-
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
-          git add blocks scripts styles
-          git commit -m "chore(ci): apply build output"
-          git push origin "HEAD:${{ github.head_ref }}"
+          git checkout -B "${PREVIEW_BRANCH}"
+          git add -A blocks scripts styles
+
+          if git diff --cached --quiet; then
+            echo "No generated file changes to commit."
+          else
+            git commit -m "chore(ci): apply build output for PR #${{ github.event.pull_request.number }}"
+          fi
+
+      - name: Push preview branch
+        run: git push --force-with-lease origin "HEAD:${PREVIEW_BRANCH}"
+
+  delete-preview-branch:
+    if: ${{ github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    env:
+      PREVIEW_BRANCH: eds-preview-pr-${{ github.event.pull_request.number }}
+    steps:
+      - name: Delete preview branch
+        run: git push origin --delete "${PREVIEW_BRANCH}" || echo "Preview branch already deleted."
