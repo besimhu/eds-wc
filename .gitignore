@@ -12,7 +12,3 @@ helix-importer-ui
 # Ensure these files are tracked
 !CLAUDE.md
 !AGENTS.md
-
-# Ignore some blocks for testing
-blocks/hero/hero.css
-blocks/hero/hero.js
