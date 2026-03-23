@@ -1,0 +1,51 @@
+name: PR Apply Build
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pr-apply-build-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  apply-build:
+    if: ${{ !github.event.pull_request.draft && github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and apply generated runtime files
+        run: npm run build:eds
+
+      - name: Commit generated files if changed
+        run: |
+          if [ -z "$(git status --porcelain -- blocks scripts styles)" ]; then
+            echo "No generated file changes to commit."
+            exit 0
+          fi
+
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add blocks scripts styles
+          git commit -m "chore(ci): apply build output"
+          git push origin "HEAD:${{ github.head_ref }}"

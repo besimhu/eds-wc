@@ -15,6 +15,7 @@
     "build:eds": "npm run build:vite && node tools/apply-vite-build.js",
     "build:eds:scoped": "npm run build:vite:scoped && node tools/apply-vite-build.js",
     "build:here": "node tools/build-here.js",
+    "setup:local": "sh tools/setup-local-gitignore.sh",
     "dev:eds": "npx -y @adobe/aem-cli up --no-open --no-livereload --forward-browser-logs",
     "dev:vite": "node tools/hmr-dev-server.js",
     "dev": "concurrently -k \"npm run dev:eds\" \"npm run dev:vite\""
