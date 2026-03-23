@@ -1,1 +1,1 @@
-console.log('Hello from the hero block!');
+console.log('Hello from the hero block!!!!!!');
